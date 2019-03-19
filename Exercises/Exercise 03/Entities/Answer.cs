@@ -8,17 +8,13 @@ namespace Exercise3.Entities
 {
     class Answer
     {
-        public bool A { get; set; }
-        public bool B { get; set; }
-        public bool C { get; set; }
-        public bool D { get; set; }
+        public string Content { get; set; }
+        public bool Truthfulness { get; set; }
 
-        public Answer(bool a, bool b, bool c, bool d)
+        public Answer(string content, bool truthfulness)
         {
-            this.A = a;
-            this.B = b;
-            this.C = c;
-            this.D = d;
+            this.Content = content;
+            this.Truthfulness = truthfulness;
         }
     }
 }

@@ -44,7 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Answer.cs" />
+    <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\Question.cs" />
+    <Compile Include="Entities\QuizServices.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
