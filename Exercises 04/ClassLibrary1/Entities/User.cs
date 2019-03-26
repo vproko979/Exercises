@@ -27,6 +27,14 @@ namespace ClassLibrary1.Entities
         {
             return $"{FirstName} {LastName}";
         }
+
+        public static void PrintAllUsers(List<User> users)
+        {
+            foreach (User userr in users)
+            {
+                Console.WriteLine($"Position: {userr.Role} / Username: {userr.Username} / First name: {userr.FirstName} / Last name: {userr.LastName}");
+            }
+        }
     }
 }
 

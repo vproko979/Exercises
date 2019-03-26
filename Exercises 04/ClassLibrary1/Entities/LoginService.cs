@@ -51,6 +51,16 @@ namespace ClassLibrary1.Entities
             Console.Clear();
         }
 
+        public static void CheckLogIn(User logged, string userUsername, string userPassword, Roles userPosition, ref bool loginIsOk, ref string usersName, ref string loggedUsername)
+        {
+            if (logged.Username == userUsername && logged.Password == userPassword && logged.Role == userPosition)
+            {
+                loginIsOk = true;
+                usersName = logged.FirstName;
+                loggedUsername = logged.Username;
+            }
+        }
+
         public static void ResetLogin(ref string userUsername, ref string userPassword, ref Roles userPosition, ref bool loginIsOk)
         {
             userUsername = "";

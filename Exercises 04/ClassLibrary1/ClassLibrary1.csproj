@@ -42,10 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Admin.cs" />
+    <Compile Include="Entities\Errors.cs" />
     <Compile Include="Entities\LoginService.cs" />
+    <Compile Include="Entities\Menus.cs" />
     <Compile Include="Entities\Student.cs" />
     <Compile Include="Entities\Trainer.cs" />
     <Compile Include="Entities\User.cs" />
+    <Compile Include="Entities\UserListGenerator.cs" />
     <Compile Include="Enums\Roles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

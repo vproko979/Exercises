@@ -12,15 +12,7 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            List<User> users = new List<User>();
-            users.Add(new Admin("John", "Doe", "jdoe", "jdoe123"));
-            users.Add(new Trainer("Bob", "Bobsky", "bsky", "bsky123"));
-            users.Add(new Trainer("Mike", "Bobsky", "bsky1", "bsky123"));
-            users.Add(new Student("Kimiko", "Burkett", "kimi", "kimi123", "C#", 5));
-            users.Add(new Student("Horacio", "Villar", "villa", "vila123", "JS", 4));
-            users.Add(new Student("Boris", "Lacross", "cross", "cross123", "C#", 5));
-            users.Add(new Student("Toney", "Matsui", "toni", "toni123",  "C#", 5));
-            users.Add(new Student("Ron", "Currin", "curr", "curr123", "JS", 4));
+            List<User> users = UserListGenerator.UsersList();
 
             Roles userPosition = Roles.Student;
             bool loginIsOk = false;
@@ -34,52 +26,27 @@ namespace ConsoleApp1
                 do
                 {
 
-                    //Main login menu.
-                    Console.WriteLine("Choose your position");
-                    Console.WriteLine();
-                    Console.WriteLine("1) Admin");
-                    Console.WriteLine("2) Trainer");
-                    Console.WriteLine("3) Student");
-                    Console.WriteLine();
-                    Console.Write("User's choice: ");
+                    Menus.MainMenu();
                     string usersChoice = Console.ReadLine();
                     Console.Clear();
 
                     //Selecting position.
-                    if (usersChoice == "")
-                    {
-                        throw new Exception("You must enter a number, between 1 and 3.");
-                    }
-                    else
+                    Errors.EmptyField(usersChoice);
+                    if (usersChoice != "")
                     {
                         userPosition = LoginService.usersPostition(usersChoice);
                     }
 
-                    //Asking for username and password.
-                    Console.WriteLine("Enter username:");
-                    string userUsername = Console.ReadLine();
-                    Console.WriteLine("Enter password");
-                    string userPassword = Console.ReadLine();
-                    Console.Clear();
-
-                    if (userUsername == "" || userPassword == "")
-                    {
-                        throw new Exception("Don't leave empty fields.");
-                    }
-
+                    string userUsername = "", userPassword = "";
+                    Menus.UsernamePasswordInput(ref userUsername, ref userPassword);
+                    Errors.EmptyFields2(userUsername, userPassword);
 
                     if (userUsername != "" && userPassword != "")
                     {
                         foreach (User logged in users)
                         {
 
-                            if (logged.Username == userUsername && logged.Password == userPassword && logged.Role == userPosition)
-                            {
-                                loginIsOk = true;
-                                usersName = logged.FirstName;
-                                loggedUsername = logged.Username;
-                                break;
-                            }
+                            LoginService.CheckLogIn(logged, userUsername, userPassword, userPosition, ref loginIsOk, ref usersName, ref loggedUsername);
 
                         }
 
@@ -105,48 +72,20 @@ namespace ConsoleApp1
                                     Console.WriteLine();
                                     Console.WriteLine("List of all users:");
                                     Console.WriteLine();
-                                    foreach (User userr in users)
-                                    {
-                                        Console.WriteLine($"Position: {userr.Role} / Username: {userr.Username} / First name: {userr.FirstName} / Last name: {userr.LastName}");
-                                    }
-
-                                    Console.WriteLine();
-                                    Console.WriteLine("1) Add user");
-                                    Console.WriteLine("2) Remove user");
-                                    Console.WriteLine("3) Logout");
-                                    Console.WriteLine();
-                                    Console.Write("User's choice: ");
+                                    User.PrintAllUsers(users);
+                                    Menus.AdminsSubMenu();
                                     string adminsChoice = Console.ReadLine();
                                     Console.Clear();
 
                                     //Add new user
                                     if (adminsChoice == "1")
                                     {
-                                        Console.WriteLine("Enter user's first name:");
-                                        string enteredName = Console.ReadLine();
-                                        Console.WriteLine("Enter user's last name:");
-                                        string enteredLastName = Console.ReadLine();
-                                        Console.WriteLine("Enter user's username:");
-                                        string enteredUserName = Console.ReadLine();
-                                        Console.WriteLine("Enter user's password:");
-                                        string enteredPassword = Console.ReadLine();
-
-                                        if (enteredName == "" || enteredUserName == "" || enteredUserName == "" || enteredPassword == "")
-                                        {
-                                            throw new Exception("Don't leave empty fields.");
-                                        }
-
-                                        Console.WriteLine("Choose your position");
-                                        Console.WriteLine("1) Admin");
-                                        Console.WriteLine("2) Trainer");
-                                        Console.WriteLine("3) Student");
+                                        string enteredName = "", enteredLastName = "", enteredUserName = "", enteredPassword = "";
+                                        Menus.NewUserInfo(ref enteredName, ref enteredLastName, ref enteredUserName, ref enteredPassword);
+                                        Errors.EmptyFields3(enteredName, enteredLastName, enteredUserName, enteredPassword);
+                                        Menus.PositionSelection();
                                         string enteredPosition = Console.ReadLine();
-                                        int enteredPositionInt = int.Parse(enteredPosition);
-
-                                        if (enteredPositionInt < 1 || enteredPositionInt > 3 || enteredPosition == "")
-                                        {
-                                            throw new Exception("You must enter a number between 1 and 3.");
-                                        }
+                                        Errors.WrongPosition(enteredPosition);
 
                                         if (enteredPosition == "1")
                                         {
@@ -164,25 +103,11 @@ namespace ConsoleApp1
                                         {
                                             Console.WriteLine("Enter student's subject:");
                                             string enteredSubject = Console.ReadLine();
-
-                                            if (enteredSubject == "")
-                                            {
-                                                throw new Exception("Don't leave empty field.");
-                                            }
-
-                                            if(enteredSubject.ToLower() != "js" && enteredSubject.ToLower() != "c#")
-                                            {
-                                                throw new Exception("Enter correct name of the subject.");
-                                            }
-
+                                            Errors.EmptyField(enteredSubject);
+                                            Errors.WrongSubject(enteredSubject);
                                             Console.WriteLine("Enter student's grade:");
                                             int enteredGrade = int.Parse(Console.ReadLine());
-
-                                            if (enteredGrade < 1 || enteredGrade > 5 )
-                                            {
-                                                throw new Exception("The grade must be between 1 and 5.");
-                                            }
-
+                                            Errors.WrongNumber(enteredGrade);
                                             Student newStudent = new Student(enteredName, enteredLastName, enteredUserName, enteredPassword, enteredSubject, enteredGrade);
                                             LoginService.AddNewUser(users, newStudent);
                                         }
@@ -193,12 +118,8 @@ namespace ConsoleApp1
                                     {
                                         Console.WriteLine("Enter user's username that you want to remove:");
                                         string enteredUser = Console.ReadLine();
-                                        Console.Clear();                                        
-
-                                        if (enteredUser == "")
-                                        {
-                                            throw new Exception("Don't leave empty search field.");
-                                        }
+                                        Console.Clear();
+                                        Errors.EmptyField(enteredUser);
 
                                         if (enteredUser != loggedUsername)
                                         {
@@ -231,14 +152,7 @@ namespace ConsoleApp1
                                 //Trainer's menu
                                 if (userPosition == Roles.Trainer)
                                 {
-                                    Console.WriteLine("What list do you want to see:");
-                                    Console.WriteLine();
-                                    Console.WriteLine("1) See the list with students");
-                                    Console.WriteLine("2) Search student by name");
-                                    Console.WriteLine("3) See list by subject");
-                                    Console.WriteLine("4) Logout");
-                                    Console.WriteLine();
-                                    Console.Write("User's choice: ");
+                                    Menus.TrainerSubMenu();
                                     string teachersChoice = Console.ReadLine();
                                     Console.Clear();
 
@@ -248,12 +162,11 @@ namespace ConsoleApp1
                                         {
                                             Console.WriteLine("Student's list:");
                                             Console.WriteLine();
-
                                             LoginService.ListStudents(LoginService.FilterUsersByDataType(users));
-
                                             Console.WriteLine();
                                             Console.WriteLine("Press \"E\" if you want to exit.");
                                             teachersChoice = Console.ReadLine();
+                                            Errors.WrongExit(teachersChoice);
 
                                             if (teachersChoice == "e")
                                             {
@@ -270,13 +183,8 @@ namespace ConsoleApp1
                                             Console.WriteLine("Enter student's name: ");
                                             Console.Write("Search: ");
                                             string teachersInput = Console.ReadLine();
-
                                             string result = LoginService.ShowMatch(LoginService.FilterUsersByRole(users, Roles.Student), teachersInput);
-
-                                            if (teachersInput == "")
-                                            {
-                                                throw new Exception("Don't leave empty search field.");
-                                            }
+                                            Errors.EmptyField(teachersInput);
 
                                             Console.Clear();
                                             if (result != "")
@@ -292,12 +200,8 @@ namespace ConsoleApp1
 
                                             Console.WriteLine();
                                             Console.WriteLine("Press \"E\" if you want to exit.");
-                                            teachersChoice = Console.ReadLine();
-
-                                            if (teachersChoice.ToLower() != "e")
-                                            {
-                                                throw new Exception("You can exit only by pressing \"E\".");
-                                            }
+                                            teachersChoice = Console.ReadLine().ToLower();
+                                            Errors.WrongExit(teachersChoice);
 
                                             if (teachersChoice == "e")
                                             {
@@ -311,21 +215,10 @@ namespace ConsoleApp1
                                     {
                                         do
                                         {
-                                            Console.WriteLine("Subjects:");
-                                            Console.WriteLine();
-                                            Console.WriteLine("1) C#");
-                                            Console.WriteLine("2) JS");
-                                            Console.WriteLine();
-                                            Console.WriteLine("Choose subject by entering the number in front of it, to see the list of students.");
-                                            Console.Write("Search: ");
+                                            Menus.SelectSubject();
                                             teachersChoice = Console.ReadLine();
-                                            int teachersChoiceInt = int.Parse(teachersChoice);
                                             Console.Clear();
-
-                                            if (teachersChoice == "" || teachersChoiceInt < 1 || teachersChoiceInt > 2)
-                                            {
-                                                throw new Exception("You must enter a number between 1 and 2.");
-                                            }
+                                            Errors.WrongSubject3(teachersChoice);
 
                                             if (int.Parse(teachersChoice) == 1)
                                             {
@@ -340,11 +233,7 @@ namespace ConsoleApp1
                                             Console.WriteLine();
                                             Console.WriteLine("Press \"E\" if you want to exit.");
                                             teachersChoice = Console.ReadLine().ToLower();
-
-                                            if (teachersChoice != "e")
-                                            {
-                                                throw new Exception("If you want to exit press \"E\".");
-                                            }
+                                            Errors.WrongExit(teachersChoice);
 
                                             if (teachersChoice == "e")
                                             {
@@ -368,34 +257,16 @@ namespace ConsoleApp1
 
                                 if (userPosition == Roles.Student)
                                 {
-                                    Console.WriteLine();
-                                    Console.WriteLine("1) See the list of available subjects");
-                                    Console.WriteLine("2) Logout");
-                                    Console.WriteLine();
-                                    Console.Write("Your choice: ");
+                                    Menus.StudentsMenu();
                                     string studentsChoice = Console.ReadLine();
                                     Console.Clear();
-
-                                    if (studentsChoice == "" || (int.Parse(studentsChoice) != 1 && int.Parse(studentsChoice) != 2))
-                                    {
-                                        throw new Exception("You must enter either 1 or 2.");
-                                    }
+                                    Errors.WrongSubject2(studentsChoice);
 
                                     if (studentsChoice == "1")
                                     {
                                         do
                                         {
-                                            Console.WriteLine("List of subjects you can choose to enroll in:");
-                                            Console.WriteLine();
-                                            Console.WriteLine("1) C#");
-                                            Console.WriteLine("2) JS");
-                                            Console.WriteLine();
-                                            Console.WriteLine("If you just want to check your grade of your current subject, press \"g\".");
-                                            Console.WriteLine();
-                                            Console.WriteLine("You must enter the number in front of the subject(e.g. 1): ");
-                                            Console.WriteLine("If you want to exit press \"e\"");
-                                            Console.WriteLine();
-                                            Console.Write("Your choice: ");
+                                            Menus.SubjectSelection();
                                             studentsChoice = Console.ReadLine();
 
                                             if (studentsChoice == "1")
@@ -443,7 +314,6 @@ namespace ConsoleApp1
             }
             catch (FormatException)
             {
-
                 Console.WriteLine("You did not enter a correct format.");
             }
             catch (NullReferenceException)
@@ -454,7 +324,6 @@ namespace ConsoleApp1
             {
                 Console.WriteLine(ex.Message);
             }
-
 
             Console.ReadLine();
 
